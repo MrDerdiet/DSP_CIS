@@ -2,7 +2,7 @@ addpath(genpath('helper_functions'));
 clearvars; hold on; close all;
 
 
-fs = 10000;
+fs = 16000;
 dftsize = 256;
 pulse_freq = 1500;
 
@@ -28,41 +28,41 @@ sig = final_sig;
 
 %}
 
-
+sig = wgn(fs*3,1,0); %White noise
 % WINDOWS
-windows1 = sinusoid(0, 1, 0.5, fs);
-windows2 = sinusoid(0, 1, 0.5, fs);
-windows3 = sinusoid(0, 1, 0.6, fs);
-windows4 = sinusoid(0, 1, 0.25, fs);
-windows5 = sinusoid(0, 1, 0.5, fs);
-freq_array1 = [830,1245,2489];
-for i = 1:3
-    [sig, t] = sinusoid(freq_array1(i), 1, 0.5, fs);
-    windows1 = windows1 + sig;
-end
-freq_array2 = [830,1245,1865,2489];
-for i = 1:4
-    [sig, t] = sinusoid(freq_array2(i), 1, 0.5, fs);
-    windows2 = windows2 + sig;
-end
-freq_array3 = [830,1245,1661];
-for i = 1:3
-    [sig, t] = sinusoid(freq_array3(i), 1, 0.6, fs);
-    windows3 = windows3 + sig;
-end
-freq_array4 = [2489];
-for i = 1:1
-    [sig, t] = sinusoid(freq_array4(i), 1, 0.25, fs);
-    windows4 = windows4 + sig;
-end
-freq_array5 = [933,1245,1865];
-for i = 1:3
-    [sig, t] = sinusoid(freq_array5(i), 1, 0.5, fs);
-    windows5 = windows5 + sig;
-end
-
-sig = [windows1; windows2; windows3; windows4; windows5];
-
+% windows1 = sinusoid(0, 1, 0.5, fs);
+% windows2 = sinusoid(0, 1, 0.5, fs);
+% windows3 = sinusoid(0, 1, 0.6, fs);
+% windows4 = sinusoid(0, 1, 0.25, fs);
+% windows5 = sinusoid(0, 1, 0.5, fs);
+% freq_array1 = [830,1245,2489];
+% for i = 1:3
+%     [sig, t] = sinusoid(freq_array1(i), 1, 0.5, fs);
+%     windows1 = windows1 + sig;
+% end
+% freq_array2 = [830,1245,1865,2489];
+% for i = 1:4
+%     [sig, t] = sinusoid(freq_array2(i), 1, 0.5, fs);
+%     windows2 = windows2 + sig;
+% end
+% freq_array3 = [830,1245,1661];
+% for i = 1:3
+%     [sig, t] = sinusoid(freq_array3(i), 1, 0.6, fs);
+%     windows3 = windows3 + sig;
+% end
+% freq_array4 = [2489];
+% for i = 1:1
+%     [sig, t] = sinusoid(freq_array4(i), 1, 0.25, fs);
+%     windows4 = windows4 + sig;
+% end
+% freq_array5 = [933,1245,1865];
+% for i = 1:3
+%     [sig, t] = sinusoid(freq_array5(i), 1, 0.5, fs);
+%     windows5 = windows5 + sig;
+% end
+% 
+% sig = [windows1; windows2; windows3; windows4; windows5];
+% 
 
 
 
@@ -78,12 +78,11 @@ rec=simout.signals.values;
 %% (1b)  Spectrogram of 'sig' and mic recording 
 % plot one figure below each other 
 
-window = ones(dftsize, 1);  % Rectangular window
-% ??????????????????????????? MOET WINDOW WEL ??????????????????????????
-% ??????????????????? WAAROM OVERLAP ???????????????????????????
-noverlap = 0;                   % N samples to overlap between segments
+window = ones(dftsize, 1);          % Rectangular window
+noverlap = 16;                      % N samples to overlap between segments
+                                    % overlap geeft nauwkeurigheid
 
-figure('Name', 'spectograms');  % fig1
+figure('Name', 'spectograms');      % fig1
 subplot( 2, 1, 1 ); 
 spectrogram(sig, window, noverlap, dftsize, fs, 'yaxis'); 
 [sig_fft, df_sig, t_sig, psd_sig] = spectrogram(sig, window, noverlap, dftsize, fs);

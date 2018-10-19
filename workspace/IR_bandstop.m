@@ -1,22 +1,19 @@
 addpath(genpath('helper_functions'));
-% clearvars; close all;
+clearvars;
+close all;
 
-%% 2.2.1 Relation between u[k], y[k] and h
-% y[k] = h(k)*u(k) (* is convolutie)
-% Y[z] = H[z].U[z]
-
-%% 2.2.2 Estimate IR h
+%%
 %%%%%parameters
 fs=16000;
 h_order = 160;                                      %(bepaald bij IR1.m)  
 sig_time = 2;
 
-%%%%%Generate input signal (witte ruis), play and record
-                                                    %(om het signaal uit de output te kunnen halen)
-sig =  wgn(fs*sig_time, 1, 0);
+sig =  bandstop(wgn(fs*3, 1, 0),[700 3000],fs);     %deze doet vanzelf 60dB dus dus 40dB verzwakking is in orde
 [simin, nbsecs, fs] = initparams(sig, fs);
 sim('recplay'); 
 rec = simout.signals.values;
+
+
 
 start = find(rec > 0.3*max(rec), 1, 'first')-20;    %geeft de eerst index die hieraan voldoet
                                                     %start is de index waar het signaal (ruis) groter is dan de ruis die er
@@ -51,33 +48,17 @@ subplot(2, 1, 2);
     xlabel('frequency(Hz)');
     ylabel('magnitude (dB)');
 
-%%%%%Save to file 'IRest.mat'
-%     matfile = fullfile('./data', 'IRest.mat');
-%     save(matfile, 'h');
+%% CONCLUSION
+% the freq between 700 en 3000 Hz give a slightly positivie freq response,
+% while at the other freq, there is a strong negative response
+% --> there's no noise transmitted between 700-3000 Hz, so no reflections,
+% so in the freq response it seems that 700-3000Hz are really good to send
+% data through
+% ps: in IR2 the freq response is negative over all freq (because of
+% transmitted white noise)
+
+% it does change over the experiments, because enviromental noise changes
+% all the time (the only thing that is recorded at those freq is the
+% enviromental noise)
+
     
-%% 2.2.3
-% Ze lijken op elkaar omdat je in hetzelfde kanaal aan het meten bent.
-
-%% 2.2.4
-% Heel gelijkaardig
-% kleine verschillen owv verschillende methode van opmeten
-% (kanaal vs. freq respons)
-
-%% 2.2.5
-% langere IR WANT meer interferentie, plaats van opnemen geeft
-% verschillende delay 
-% --> KORTOM: moeilijker op te meten
-
-% verify experimentally impossible, don't have stereos
-
-%% 2.2.6
-% sound waves are diverted SO longer path from speaker to microphone
-% + specific freq are absorbed more than other by your hand
-% --> results in different TF
-
-% experiment: toooooo much distortion, can't handle this
-
-%% 2.3.1
-
-% does not change a lot, the channel stays the same over all experiments 
-% (not )

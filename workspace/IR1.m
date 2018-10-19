@@ -4,23 +4,23 @@ clearvars; hold on; close all;
 %% 2.1.1 Create and plot impulse responce
 
 fs = 16000;
-sig = zeros(1600,1); sig(1) = 1; % impulse signal 
+sig = zeros(1600,1); sig(1) = 1;                    % impulse signal 
 [simin, nbsecs, fs] = initparams(sig, fs);
 
 sim('recplay')
 rec=simout.signals.values;
 
 
-impulse = find(rec==max(rec)); % vind de index (plaats van het samle) waar de waarde van de rec max wordt, dit is het begin van de impulsrespons
-IR = rec(impulse-10:impulse+150); % ietsje voor die index beginnen en ver genoeg erna eindigen om de hele respons te houden
+impulse = find(rec==max(rec));                      % vind de index (plaats van het samle) waar de waarde van de rec max wordt, dit is het begin van de impulsrespons
+IR = rec(impulse-10:impulse+150);                   % ietsje voor die index beginnen en ver genoeg erna eindigen om de hele respons te houden
 
- t = (0: 1 : (length(IR)-1)) /fs; % is een rijvector
+ t = (0: 1 : (length(IR)-1)) /fs;                   % is een rijvector
  
 % fft
-fft_IR = fft(IR)'; % transpose want we willen een rijvector om te kunnen plotten
-length_IR = round((length(fft_IR)-1)/2 );       % Take half the length
-fft_IR_trunc = abs(fft_IR(1 : length_IR));     % Use only first half of fft samples (=positive frequencies).
-df_IR = (0 : fs /(2*length_IR) : (fs-1)/2);     % Frequency vector for x-axis in plots
+fft_IR = fft(IR)';                                  % transpose want we willen een rijvector om te kunnen plotten
+length_IR = round((length(fft_IR)-1)/2 );           % Take half the length
+fft_IR_trunc = abs(fft_IR(1 : length_IR));          % Use only first half of fft samples (=positive frequencies).
+df_IR = (0 : fs /(2*length_IR) : (fs-1)/2);         % Frequency vector for x-axis in plots
 
 
 
@@ -30,10 +30,9 @@ subplot(2, 1, 1);
     title('impulse response');
     xlabel('time (sec)');
     ylabel('magnitude');
-% Frequency domain plot
 subplot(2, 1, 2);
     plot(df_IR, 20*log10(fft_IR_trunc));
-    title('signal spectrum / filter frequency response');
+    title('frequency response');
     xlabel('frequency(Hz)');
     ylabel('magnitude (dB)');
     

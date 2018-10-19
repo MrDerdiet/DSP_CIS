@@ -1,0 +1,44 @@
+addpath(genpath('helper_functions'));
+clearvars; hold on; close all;
+
+%% White noise experiment
+fs = 16000;
+dftsize = 256;
+
+sig = wgn(fs*3,1,0); %White noise
+
+[simin,nbsecs,fs] = initparams(sig,fs);
+
+sim('recplay');
+
+rec=simout.signals.values;
+
+
+window = ones(dftsize, 1);          % Rectangular window
+noverlap = 16;                      % N samples to overlap between segments
+                                    % overlap geeft nauwkeurigheid
+
+figure('Name', 'spectograms');      % fig1
+subplot( 2, 1, 1 ); 
+spectrogram(sig, window, noverlap, dftsize, fs, 'yaxis'); 
+[sig_fft, df_sig, t_sig, psd_sig] = spectrogram(sig, window, noverlap, dftsize, fs);
+title( 'original signal spectogram' );
+
+subplot( 2, 1, 2 );
+spectrogram(rec, window, noverlap, dftsize, fs, 'yaxis');
+[rec_fft, df_rec, t_rec, psd_rec] = spectrogram(rec, window, noverlap, dftsize, fs);
+title( 'recorded signal spectogram' );
+
+psd_sig_avg = mean(psd_sig, 2)';
+psd_rec_avg = mean(psd_rec, 2)';
+
+figure('Name', 'PSD'); %fig2
+subplot(2,1, 1);
+plot(df_sig, 10*log10(psd_sig_avg));  title( 'original signal PSD' ); xlabel( 'frequency(Hz)' ); ylabel( 'magnitude (dB)' );
+subplot(2,1,2);
+plot(df_rec, 10*log10(psd_rec_avg)); title( 'recorded signal PSD' ); xlabel( 'frequency(Hz)' ); ylabel( 'magnitude (dB)' );
+
+%%
+
+
+
