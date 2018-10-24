@@ -17,7 +17,7 @@ rec = simout.signals.values;
 
 
 
-start = find(rec > 0.3*max(rec), 1, 'first')-20;    %geeft de eerst index die hieraan voldoet
+start = find(rec > 0.5*max(rec), 1, 'first')-20;    %geeft de eerst index die hieraan voldoet
                                                     %start is de index waar het signaal (ruis) groter is dan de ruis die er
                                                     %altijd is --> zeker dat het signaal daar start
 
