@@ -22,8 +22,8 @@ sim('recplay');
 rec2=simout.signals.values;
 [sig_fft2, df_sig2, t_sig2, psd_sig2] = spectrogram(rec2, window, noverlap, dftsize, fs);
 
-p_noise = mean(psd_sig1,2)';
-p_signal = mean(psd_sig2-psd_sig1,2)';
+p_noise = abs(mean(psd_sig1,2))';
+p_signal = abs(mean(psd_sig2-psd_sig1,2))';
 %ongecorelleerde PSD, dus mag je gewoon optellen of aftrekken
 
 figure('Name', 'PSD');
@@ -32,18 +32,9 @@ plot(df_sig1, 10*log10(p_noise));  title( 'noise PSD' ); xlabel( 'frequency(Hz)'
 subplot(2,1,2);
 plot(df_sig2, 10*log10(p_signal)); title( 'signal PSD' ); xlabel( 'frequency(Hz)' ); ylabel( 'magnitude (dB)' );
 
-c_chan = 0;
 N = dftsize/2;
-ratio = zeros(N,1);
-for m = 1:N
-    ratio(m) = p_signal(m)/p_noise(m);
-end
-
-for k = 1:N
-    c_chan = c_chan + fs/(2*N)*log2(1+ratio(k));
-end
-
-
+ratio = p_signal./p_noise;
+c_chan = sum(fs/(2*N)*log2(1+ratio));
 %% 1 
 % dell optiplex 3060 ... dell U989P (internal speaker)
 % All frequencies audible by humans
