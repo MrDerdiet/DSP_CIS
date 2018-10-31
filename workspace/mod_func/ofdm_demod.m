@@ -10,9 +10,9 @@ seq_reshaped = seq_reshaped(cp_size+1 : end , :);% Prefix eraf halen
 seq_fft = fft(seq_reshaped); % FFT ervan nemen
 
 % 'Channel equalization'
-seq_qam = mldivide(H_channel, seq_fft);
+seq_qam = mldivide(H_channel, seq_fft); %karakterisktieken van kanaal er terug uit halen
 
-seq_qam = seq_qam(2 : N/2, 1:P); % enkel de sectie eruithalen met nuttige data
+seq_qam = seq_qam(2 : N/2, 1:P); % enkel de sectie eruithalen met nuttige data -> complex toegevoegdes weglaten
 
 seq_qam = seq_qam(:); % terug mooi een vector van maken 
 end

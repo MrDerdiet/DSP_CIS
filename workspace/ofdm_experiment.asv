@@ -39,14 +39,13 @@ R = K * (N/2-1) * fs/2;
 % fs/2: hoe snel frames na elkaar sturen zonder overlap = bandbreedte (-> Nyquist: fs=2*B dus B=fs/2)
 
 %% 3.2.6
-seq_noise_ofdm = awgn(seq_ofdm, 18.5, 'measured'); % ruis op OFDM signaal voegen, dit komt aan de input
+seq_noise_ofdm = awgn(seq_ofdm, SNR, 'measured'); % ruis op OFDM signaal voegen, dit
+
 
 seq_noise_res_qam = ofdm_demod(seq_noise_ofdm, N, cp_size, 1);
-
 scatterplot(seq_noise_res_qam(:));
-seq_noise_result = qam_demod(seq_noise_res_qam, K);
-
-seq_noise_result = seq_noise_result(1:n);
+seq_noise_demod = qam_demod(seq_noise_res_qam, K);
+seq_noise_result = seq_noise_demod(1: size(seq_noise_demod)-pad_bits);
 ber_noise = ber(seq, seq_noise_result);
 
 
