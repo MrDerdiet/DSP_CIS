@@ -3,7 +3,7 @@ function [seq_qam] = ofdm_demod(seq_ifft, N, cp_size, H_channel)
 % bereken aantal pakketjes (P frames van N+cp lenghte)
 P = size(seq_ifft, 1)/(N + cp_size);
 
-% de vector terug mooi omvormen naar een matrix met elke collum een frame
+% de vector terug mooi omvormen naar een matrix met elke kollom een frame
 seq_reshaped = reshape(seq_ifft, N + cp_size, P);
 seq_reshaped = seq_reshaped(cp_size+1 : end , :);% Prefix eraf halen
 

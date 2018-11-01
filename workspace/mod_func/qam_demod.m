@@ -8,4 +8,5 @@ seq_demod_int = qamdemod(seq_mod, 2^K, 'bin', 'UnitAveragePower', true);    % de
 seq_demod_cluster = de2bi(seq_demod_int).';                                 % de symbolen terug omzetten naar bitsequenties (in rijen DUS transpose)
 seq_demod = seq_demod_cluster(:);                                           % maak vector van matrix
 
+
 end

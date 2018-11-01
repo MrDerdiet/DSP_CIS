@@ -7,7 +7,7 @@ M = 2^K;
 n = 256*16*K; % Number of data points
 E_tot = 2/3*(M-1);
 plot_normalized = 1; %If 1, scatterplots will show normalized values.
-
+SNR = 19; 
 
 
 %% (3.1) 
@@ -32,8 +32,7 @@ scatterplot(seq_mod*(sqrt(E_tot))^(1-plot_normalized), 1, 0, 'b*'); % constellat
 % 2/3*(M-1) = cumsum(abs(seq_mod(i))^2) for(i= 1:n/K) 
 % Veronderstelling: random data: dus elke conctellatie even waarschijnlijk.
 
-%%% 3.1.5 %%%
-SNR = 22;                                           
+%%% 3.1.5 %%%                                          
 seq_mod_noise = awgn(seq_mod, SNR, 'measured');                             % zet ruis op de gemoduleerde sequentie (dus seq + wgn)
 scatterplot(seq_mod_noise*(sqrt(E_tot))^(1-plot_normalized), 1, 0, 'b*');   % constellation diagram
 % afhankelijk van SNR kan een grotere K genomen worden

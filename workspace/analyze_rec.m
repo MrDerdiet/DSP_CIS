@@ -27,7 +27,9 @@ sig = final_sig;
 
 %}
 
-sig = wgn(fs*3,1,0); %White noise
+%sig = wgn(fs*3,1,0); %White noise
+
+
 % WINDOWS
 % windows1 = sinusoid(0, 1, 0.5, fs);
 % windows2 = sinusoid(0, 1, 0.5, fs);
@@ -63,6 +65,24 @@ sig = wgn(fs*3,1,0); %White noise
 % sig = [windows1; windows2; windows3; windows4; windows5];
 % 
 
+
+fs = 16000;
+t = 0:1/fs:0.3-1/fs;
+
+%   niets do=1 re=2   mi=3   fa=4   sol=5 la=6  si=7  do=8   re=9   mi=10  fa=11 sol=12 la=13  si=14
+l = [0 130.81 146.83 164.81 174.61 196.00 220 246.94 261.63 293.66 329.63 349.23 392.00 440 493.88];
+h = [0 523.25 587.33 659.25 698.46 783.99 880 987.77 1046.50 1174.66 1318.50 1396.92 1567.98 1760 1975.54];
+note = @(f,g) [1 1]*sin(2*pi*[l(f) h(g)]'*t);
+
+low  = [3 5 6 6 6 6 6 7 8 8 8 8 8 9 7 7 7 7 6 5 5 6 0 0 3 5 6 6 6 6 6 7 8 8 8 8 8 9 7 7 7 7 6 5 6 6 6 6]+1;
+high = [3 5 6 6 6 6 6 7 8 8 8 8 8 9 7 7 7 7 6 5 5 6 0 0 3 5 6 6 6 6 6 7 8 8 8 8 8 9 7 7 7 7 6 5 6 6 6 6]+1;
+
+song = [];
+for kj = 1:length(low)
+    song = [song note(low(kj),high(kj)) zeros(1,0.01*fs)];
+end
+song = song/(max(abs(song))+0.1);
+sig = song';
 
 
 %% (1a) Play the audio signal ('sig') and record (to 'rec') using Simulink 
