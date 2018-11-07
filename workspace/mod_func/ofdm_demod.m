@@ -11,6 +11,9 @@ seq_fft = fft(seq_reshaped); % FFT ervan nemen
 
 % 'Channel equalization'
 seq_qam = mldivide(H_channel, seq_fft); %karakterisktieken van kanaal er terug uit halen
+                                        %ga ervan uit dat H_channel een diagonale matrix is zoals slide 33 les 3
+                                        %dit is schalen met de inverse (delen door de elem)
+%%%% ??????????? DIT KAN MISSCHIEN ELEMENTGEWIJS EN DAN H_CHANNEL ALS VECTOR IPV DIAGMATRIX ??????????????????????????
 
 seq_qam = seq_qam(2 : N/2, 1:P); % enkel de sectie eruithalen met nuttige data -> complex toegevoegdes weglaten
 

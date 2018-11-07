@@ -8,7 +8,7 @@ P = ceil(size(seq_qam, 1) / (N/2 -1)); % P berekenen : totale lengte van seq_qam
 
 % P -> moet een geheel getal zijn dus afronden naar boven en dan de seq padden met nullen
 
-%Nullem toevoegen zodat we kunnen reshapen
+%Nullen toevoegen zodat we kunnen reshapen
 seq_qam_pad = padarray(seq_qam,P*(N/2-1)-size(seq_qam, 1),0,'post');
 
 % data groeperen in P x (N/2-1) matrix Group data in in P packets (X[1], ..., X[N/2-1] in each)
