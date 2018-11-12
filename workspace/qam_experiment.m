@@ -1,13 +1,13 @@
 addpath(genpath('helper_functions'), genpath('mod_func'), genpath('data'));
-clearvars; hold on; close all;
+%clearvars; hold on; close all;
 
 %% PARAMETERS
-K = 4 ; % Number of bits per constellation
+K = 6 ; % Number of bits per constellation
 M = 2^K;
 n = 256*16*K; % Number of data points
 E_tot = 2/3*(M-1);
 plot_normalized = 1; %If 1, scatterplots will show normalized values.
-SNR = 19; 
+SNR = 35; 
 
 
 %% (3.1) 

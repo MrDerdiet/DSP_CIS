@@ -1,4 +1,4 @@
-function [seq_ofdm] = ofdm_mod(seq_qam, N, cp_size)
+function [seq_ofdm] = ofdm_mod(seq_qam, N, cp_size, freq_bins)
 
 P = ceil(size(seq_qam, 1) / (N/2 -1)); % P berekenen : totale lengte van seq_qam
 % gedeeld door het aamtal elementen dat we in elke frame kunnen steken. in

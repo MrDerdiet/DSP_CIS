@@ -5,7 +5,7 @@ clearvars; hold on; close all;
 K = 8;
 N = 512;
 
-SNR = 100000000000000000;
+SNR = 60;
 L = 160; %channel length
 cp_size = L+16;
 
@@ -53,13 +53,14 @@ h = mldivide(U, y);                                 %NOTE: least-square solution
 h = [h; zeros(N -size(h, 1), 1)];
 
 Hn_vector = fft(h);
-Hn_matrix = diag(Hn_vector);                        % mbv deze matrix kan je dan doen zoals slide 33 (fft_van_yk = Hn_elem*fft_van_xk)
+%Hn_matrix = diag(Hn_vector);                        % mbv deze matrix kan je dan doen zoals slide 33 (fft_van_yk = Hn_elem*fft_van_xk)
+
 
 ofdmStream = fftfilt(h, ofdmStream);                % alsof het signaal over het kanaal wordt gestuurd (signaal*TF)
 rxOfdmStream = awgn(ofdmStream, SNR, 'measured');   % witte ruis erop
 
 %% OFDM demodulation
-rxQamStream = ofdm_demod(rxOfdmStream, N, cp_size, Hn_matrix);
+rxQamStream = ofdm_demod(rxOfdmStream, N, cp_size, Hn_vector);
 
 %% QAM demodulation
 rxBitStream = qam_demod(rxQamStream,K);
@@ -74,4 +75,13 @@ imageRx = bitstreamtoimage(rxBitStream, imageSize, bitsPerPixel);
 
 %% Plot images
 subplot(2,1,1); colormap(colorMap); image(imageData); axis image; title('Original image'); drawnow;
-subplot(2,1,2); colormap(colorMap); image(imageRx); axis image; title(['Received image']); drawnow;
+subplot(2,1,2); colormap(colorMap); image(imageRx); axis image; title('Received image'); drawnow;
+
+
+
+
+%% ON-OF bitloading
+
+% -> errors bij elkaar in de buurt: lijnen over het beeld
+
+
