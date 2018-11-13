@@ -5,7 +5,7 @@ clearvars; hold on; close all;
 K = 8;
 N = 512;
 
-SNR = 60;
+SNR = 10;
 L = 160; %channel length
 cp_size = L+16;
 
@@ -28,6 +28,7 @@ Hn_vector = fft(h);
 
 %% OFDM modulation
 ofdmStream = ofdm_mod_onoff(qamStream, N, cp_size,freq_bins);
+
 
 %% channel
 ofdmStream = fftfilt(h, ofdmStream);                % alsof het signaal over het kanaal wordt gestuurd (signaal*TF)

@@ -2,9 +2,9 @@ addpath(genpath('helper_functions'));
 clearvars; hold on; close all;
 
 fs = 16000;
-dftsize = 128;
+dftsize = 512;
 window = ones(dftsize, 1);
-noverlap = 4;             
+noverlap = 0;             
 
 
 % silence is send

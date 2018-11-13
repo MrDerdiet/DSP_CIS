@@ -8,9 +8,28 @@ N = 512;
 SNR = 60;
 L = 160; %channel length
 cp_size = L+16;
+fs=16000;
+h_order = 160; 
+dftsize = N;
+window = ones(dftsize, 1);
+noverlap = 0;  
 
 %% Convert BMP image to bitstream
 [bitStream, imageData, colorMap, imageSize, bitsPerPixel] = imagetobitstream('image.bmp');
+
+
+%% 1 zend ruis; bereken p(k) 
+
+sig1 = ones(2*fs, 1);
+[simin,nbsecs,fs] = initparams(sig1,fs);
+sim('recplay');
+rec1=simout.signals.values;
+[sig_fft1, df_sig1, t_sig1, psd_sig1] = spectrogram(rec1, window, noverlap, dftsize, fs);
+
+
+p_noise = abs(mean(psd_sig1,2));
+
+
 
 %% QAM modulation
 qamStream = qam_mod(bitStream,K);
@@ -25,8 +44,7 @@ qamStream = qam_mod(bitStream,K);
 
 % h van IR2
 %%%%%parameters
-fs=16000;
-h_order = 160;                                      %(bepaald bij IR1.m)  
+                                     %(bepaald bij IR1.m)  
 sig_time = 2;
 
 %%%%%Generate input signal (witte ruis), play and record
@@ -54,6 +72,10 @@ h = [h; zeros(N -size(h, 1), 1)];
 Hn_vector = fft(h);
 %Hn_matrix = diag(Hn_vector);                        % mbv deze matrix kan je dan doen zoals slide 33 (fft_van_yk = Hn_elem*fft_van_xk)
 
+%% b(k)
+p_noise = p_noise(2:end-1);
+Hk = Hn_vector(2:N/2);
+bins = floor(log2(1+(abs(Hk).^2)./(10*p_noise)));
 [freq_bins] = ofdm_freq_bins(Hn_vector, N, 0);
 
 

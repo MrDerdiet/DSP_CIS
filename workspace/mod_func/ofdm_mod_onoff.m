@@ -11,7 +11,7 @@ P = ceil(size(seq_qam, 1) / M); % P berekenen : totale lengte van seq_qam
 % P -> moet een geheel getal zijn dus afronden naar boven en dan de seq padden met nullen
 
 %Nullen toevoegen zodat we kunnen reshapen
-seq_qam_pad = padarray(seq_qam,P*M-size(seq_qam, 1),0,'pre');
+seq_qam_pad = padarray(seq_qam,P*M-size(seq_qam, 1),0,'post');
 
 % data groeperen in P x (N/2-1) matrix Group data in in P packets (X[1], ..., X[N/2-1] in each)
 seq_qam_reshaped = reshape(seq_qam_pad, M, P);
@@ -22,7 +22,7 @@ i = 1;
 for j = 1: length(freq_bins)
     if  freq_bins(j)
         frames(j+1,:)= seq_qam_reshaped(i,:); 
-        frames(N+2-j+1, :) = conj(seq_qam_reshaped(i, :));
+        frames(N+2-j-1, :) = conj(seq_qam_reshaped(i, :));
         i = i+1;
     end
 end
