@@ -15,8 +15,7 @@ cp_size = L+16;
 %% QAM modulation
 qamStream = qam_mod(bitStream,K);
 
-%% OFDM modulation
-ofdmStream = ofdm_mod(qamStream, N, cp_size);
+
 
 %% Channel -> with fftfilt
 
@@ -55,12 +54,19 @@ h = [h; zeros(N -size(h, 1), 1)];
 Hn_vector = fft(h);
 %Hn_matrix = diag(Hn_vector);                        % mbv deze matrix kan je dan doen zoals slide 33 (fft_van_yk = Hn_elem*fft_van_xk)
 
+[freq_bins] = ofdm_freq_bins(Hn_vector, N, 0.5);
 
+
+
+%% OFDM modulation
+ofdmStream = ofdm_mod_onoff(qamStream, N, cp_size,freq_bins);
+
+%% channel
 ofdmStream = fftfilt(h, ofdmStream);                % alsof het signaal over het kanaal wordt gestuurd (signaal*TF)
 rxOfdmStream = awgn(ofdmStream, SNR, 'measured');   % witte ruis erop
 
 %% OFDM demodulation
-rxQamStream = ofdm_demod(rxOfdmStream, N, cp_size, Hn_vector);
+rxQamStream = ofdm_demod_onoff(rxOfdmStream, N, cp_size, Hn_vector,freq_bins);
 
 %% QAM demodulation
 rxBitStream = qam_demod(rxQamStream,K);
