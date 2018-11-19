@@ -2,7 +2,7 @@ addpath(genpath('helper_functions'), genpath('mod_func'), genpath('data'));
 clearvars; hold on; close all;
 
 %% params
-K = 8;
+K = 6;
 N = 512;
 
 SNR = 10;
@@ -22,7 +22,7 @@ h = [h; zeros(N -size(h, 1), 1)];
 
 Hn_vector = fft(h);
 
-[freq_bins] = ofdm_freq_bins(Hn_vector, N, 0.5);
+[freq_bins] = ofdm_freq_bins(Hn_vector, N, 0.56);
 
 
 

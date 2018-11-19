@@ -1,6 +1,5 @@
-function [seq_qam] = ofdm_demod_onoff(seq_ifft, N, cp_size, H_channel,freq_bins)
+function [seq_out] = ofdm_demod_ada(seq_ifft, N, cp_size, H_channel,freq_bins)
 
-M = sum(freq_bins); % M = aantal ellementen in 1 frame
 % bereken aantal pakketjes (P frames van N+cp lenghte)
 P = size(seq_ifft, 1)/(N + cp_size);
 
@@ -16,17 +15,22 @@ seq_fft = fft(seq_reshaped); % FFT ervan nemen
                                         %dit is schalen met de inverse (delen door de elem)
 frames = seq_fft./H_channel;
 
-seq_qam = zeros(M,P);
+
+
+seq_out = [];
 % enkel de sectie eruithalen met nuttige data -> complex toegevoegdes weglaten
-i =1;
+
 for j = 1: length(freq_bins)
     if  freq_bins(j)
-        seq_qam(i,:)=frames(j+1,:);
-        i = i+1;
+        K = freq_bins(j);
+        seq_mod = frames(j+1,:);
+        seq_demod_int = qamdemod(seq_mod, 2^K, 'bin', 'UnitAveragePower', true);    % demodulate: gemoduleerde seq weer omzetten naar symbolen (= decimale getallen) 
+        seq_demod_cluster = de2bi(seq_demod_int).';                                 % de symbolen terug omzetten naar bitsequenties (in rijen DUS transpose)
+        seq_demod = seq_demod_cluster(:);
+        seq_out = [seq_out ; seq_demod];
     end
 end 
 
-seq_qam = seq_qam(:); % terug mooi een vector van maken 
 
 end
 

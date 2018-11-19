@@ -2,10 +2,10 @@ addpath(genpath('helper_functions'), genpath('mod_func'), genpath('data'));
 clearvars; hold on; close all;
 % Exercise session 4: DMT-OFDM transmission scheme
 
-K = 8;
+K = 6;
 N = 512;
 
-SNR = 60;
+SNR = 35;
 L = 160; %channel length
 cp_size = L+16;
 fs=16000;
@@ -20,15 +20,44 @@ noverlap = 0;
 
 %% 1 zend ruis; bereken p(k) 
 
-sig1 = ones(2*fs, 1);
+%{
+% silence is send
+sig1 = zeros(0.1*fs, 1);
 [simin,nbsecs,fs] = initparams(sig1,fs);
 sim('recplay');
 rec1=simout.signals.values;
 [sig_fft1, df_sig1, t_sig1, psd_sig1] = spectrogram(rec1, window, noverlap, dftsize, fs);
 
 
-p_noise = abs(mean(psd_sig1,2));
+% signal, white noise to get all frequencies
+sig2 = wgn(0.1*fs,1,0); %White noise
+[simin,nbsecs,fs] = initparams(sig2,fs);
+sim('recplay');
+rec2=simout.signals.values;
+[sig_fft2, df_sig2, t_sig2, psd_sig2] = spectrogram(rec2, window, noverlap, dftsize, fs);
 
+p_noise = abs(mean(psd_sig1,2))';
+p_signal = abs(mean(psd_sig2-psd_sig1,2))';
+%ongecorelleerde PSD, dus mag je gewoon optellen of aftrekken
+
+figure('Name', 'PSD');
+subplot(2,1,1);
+plot(df_sig1, 10*log10(p_noise));  title( 'noise PSD' ); xlabel( 'frequency(Hz)' ); ylabel( 'magnitude (dB)' );
+subplot(2,1,2);
+plot(df_sig2, 10*log10(p_signal)); title( 'signal PSD' ); xlabel( 'frequency(Hz)' ); ylabel( 'magnitude (dB)' );
+
+N = dftsize/2;
+ratio = p_signal./p_noise;
+c_chan = sum(fs/(2*N)*log2(1+ratio));
+%}
+
+sig1 = zeros(2*fs, 1);
+[simin,nbsecs,fs] = initparams(sig1,fs);
+sim('recplay');
+rec1=simout.signals.values;
+[sig_fft1, df_sig1, t_sig1, psd_sig1] = spectrogram(rec1, window, noverlap, dftsize, fs);
+
+p_noise = abs(mean(psd_sig1,2));
 
 
 %% QAM modulation
@@ -45,7 +74,7 @@ qamStream = qam_mod(bitStream,K);
 % h van IR2
 %%%%%parameters
                                      %(bepaald bij IR1.m)  
-sig_time = 2;
+sig_time = 0.2;
 
 %%%%%Generate input signal (witte ruis), play and record
                                                     %(om het signaal uit de output te kunnen halen)
@@ -75,23 +104,26 @@ Hn_vector = fft(h);
 %% b(k)
 p_noise = p_noise(2:end-1);
 Hk = Hn_vector(2:N/2);
-bins = floor(log2(1+(abs(Hk).^2)./(10*p_noise)));
+Hk2 = abs(Hk).^2;
+bins = floor(log2(1+Hk2./(10*p_noise)));
+bins = floor((bins-min(bins))/(max(bins)-min(bins))*K);
 [freq_bins] = ofdm_freq_bins(Hn_vector, N, 0);
 
-
+figure
+plot(bins)
 
 %% OFDM modulation
-ofdmStream = ofdm_mod_onoff(qamStream, N, cp_size,freq_bins);
+ofdmStream = ofdm_mod_ada(bitStream, N, cp_size,bins);
 
 %% channel
 ofdmStream = fftfilt(h, ofdmStream);                % alsof het signaal over het kanaal wordt gestuurd (signaal*TF)
 rxOfdmStream = awgn(ofdmStream, SNR, 'measured');   % witte ruis erop
 
 %% OFDM demodulation
-rxQamStream = ofdm_demod_onoff(rxOfdmStream, N, cp_size, Hn_vector,freq_bins);
+rxBitStream = ofdm_demod_ada(rxOfdmStream, N, cp_size, Hn_vector,bins);
 
 %% QAM demodulation
-rxBitStream = qam_demod(rxQamStream,K);
+%%rxBitStream = qam_demod(rxQamStream,K);
 
 %% Compute BER
 rxBitStream = rxBitStream(1:length(bitStream));
@@ -102,6 +134,7 @@ berTransmission = ber(bitStream,rxBitStream);
 imageRx = bitstreamtoimage(rxBitStream, imageSize, bitsPerPixel);
 
 %% Plot images
+figure;
 subplot(2,1,1); colormap(colorMap); image(imageData); axis image; title('Original image'); drawnow;
 subplot(2,1,2); colormap(colorMap); image(imageRx); axis image; title('Received image'); drawnow;
 

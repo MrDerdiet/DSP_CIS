@@ -8,7 +8,7 @@ noverlap = 0;
 
 
 % silence is send
-sig1 = zeros(2*fs, 1);
+sig1 = zeros(0.5*fs, 1);
 [simin,nbsecs,fs] = initparams(sig1,fs);
 sim('recplay');
 rec1=simout.signals.values;
@@ -16,7 +16,7 @@ rec1=simout.signals.values;
 
 
 % signal, white noise to get all frequencies
-sig2 = wgn(fs*2,1,0); %White noise
+sig2 = wgn(fs*0.5,1,0); %White noise
 [simin,nbsecs,fs] = initparams(sig2,fs);
 sim('recplay');
 rec2=simout.signals.values;
