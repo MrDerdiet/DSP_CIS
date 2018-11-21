@@ -5,7 +5,7 @@ clearvars; hold on; close all;
 K = 6;
 N = 512;
 
-SNR = 10;
+SNR = 5;
 L = 160; %channel length
 cp_size = L+16;
 
@@ -22,7 +22,7 @@ h = [h; zeros(N -size(h, 1), 1)];
 
 Hn_vector = fft(h);
 
-[freq_bins] = ofdm_freq_bins(Hn_vector, N, 0.56);
+[freq_bins] = ofdm_freq_bins(Hn_vector, N, 0.1);
 
 
 
