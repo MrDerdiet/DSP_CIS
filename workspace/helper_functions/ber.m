@@ -1,8 +1,16 @@
 function [ber, seq_error] = ber(seq_1, seq_2)
 
-if (size(seq_1) ~= size(seq_2))
-    error('seq_1 and seq_2 should have the same dimensions');
+
+if length(seq_1) > length(seq_2)
+    seq_1 = seq_1(1:length(seq_2));
+    warning('shorted seq_1');
 end
+
+if length(seq_1) < length(seq_2)
+    seq_2 = seq_2(1:length(seq_1));
+    warning('shorted seq_2');
+end
+        
 
 %% BER calculation
 seq_error = (seq_1 ~= seq_2);       % equality test (fout=1, juist=0)

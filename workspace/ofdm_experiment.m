@@ -1,5 +1,5 @@
 addpath(genpath('helper_functions'), genpath('mod_func'), genpath('data'));
-clearvars; hold on; close all;
+%clearvars; hold on; close all;
 
 %% PARAMETERS
 K = 4 ; % Number of bits per constellation

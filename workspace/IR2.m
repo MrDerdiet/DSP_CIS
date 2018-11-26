@@ -1,5 +1,5 @@
 addpath(genpath('helper_functions'));
-clearvars; close all;
+%clearvars; close all;
 
 %% 2.2.1 Relation between u[k], y[k] and h
 % y[k] = h(k)*u(k) (* is convolutie)

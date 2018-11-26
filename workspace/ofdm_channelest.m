@@ -2,14 +2,15 @@ addpath(genpath('helper_functions'), genpath('mod_func'), genpath('data'));
 clearvars; hold on; close all;
 % Exercise session 4: DMT-OFDM transmission scheme
 
-K = 6;
+K = 4;
 N = 512;
 fs = 16000;
 
 SNR = 60;
-L = 160; %channel length
+L = 180; %channel length
 cp_size = L+16;
 
+%% 5.1
 seq = randi([0 1], (N/2-1)*K, 1); % random bits
 trainblock = qam_mod(seq, K); 
 trainblocks = repmat(trainblock,100,1);
@@ -17,7 +18,7 @@ Tx = ofdm_mod(trainblocks, N, cp_size);
 
 
 load('h_ir2','h');
-h = [h; zeros(N -size(h, 1), 1)];
+h = [zeros(20,1); h; zeros(N -20 -size(h, 1), 1)];
 
 Rx = fftfilt(h, Tx);
 
@@ -49,32 +50,80 @@ subplot(2, 1, 2);
 
 h_est = (real(ifft(H)'))';
 h_est = [h_est; zeros(N -size(h_est, 1), 1)];
-%h_est = h_est(1: (length(H)-1));
 figure('Name', 'H estimated');
 subplot(2, 1, 1);
     plot(t, h_est);
-    title('acoustic impulse response');
+    title('estimated impulse response');
     xlabel('time (sec)');
     ylabel('magnitude');
 subplot(2, 1, 2);
     plot(df_h, real(20*log10(H)));
-    title('acoustic channel frequency response');
+    title('estimated channel frequency response');
     xlabel('frequency(Hz)');
     ylabel('magnitude (dB)');
      
 
-h_error = h - h_est;
-h_log_error = 20*log10(fft_h_trunc) - (real(20*log10(H)))';
-figure('Name', 'Error estimate-acoustic');
+% h_error = h - h_est;
+% h_log_error = 20*log10(fft_h_trunc) - (real(20*log10(H)))';
+% figure('Name', 'Error estimate-acoustic');
+% subplot(2, 1, 1);
+%     plot(t, h_error);
+%     title('acoustic error');
+%     xlabel('time (sec)');
+%     ylabel('magnitude');
+% subplot(2, 1, 2);
+%     plot(df_h, h_log_error);
+%     title('acoustic channel frequency response');
+%     xlabel('frequency(Hz)');
+%     ylabel('magnitude (dB)');
+    
+%% 5.2 
+
+seq = randi([0 1], (N/2-1)*K, 1); % random bits
+trainblock = qam_mod(seq, K); 
+trainblocks = repmat(trainblock,100,1);
+Tx = ofdm_mod(trainblocks, N, cp_size);
+
+%pulse  =  wgn(fs*0.1, 1, 0); % pulse = 0.1 sec of noise
+[pulse, ~] = sinusoid(1000, 1, 1, fs);
+[simin,nbsecs,fs,pulse ] = initparams(Tx,fs,L, pulse);
+
+sim('recplay'); 
+rec = simout.signals.values;
+
+[Rx_2] = alignIO(rec,pulse,L);
+Rx_2 = Rx_2(1:length(Tx));
+
+[seq_qam , H] = ofdm_demod(Rx_2, N, cp_size, trainblock);
+
+receive_deqam = qam_demod(seq_qam, K); 
+trainblocks_deqam = qam_demod(trainblocks, K); 
+
+
+
+[bert, bert_seq] = ber(seq,trainblocks_deqam);
+
+h_est = (real(ifft(H)'))';
+h_est = [h_est; zeros(N -size(h_est, 1), 1)];
+figure('Name', 'H estimated over channel');
 subplot(2, 1, 1);
-    plot(t, h_error);
-    title('acoustic error');
+    plot(t, h_est);
+    title('estimated impulse response');
     xlabel('time (sec)');
     ylabel('magnitude');
 subplot(2, 1, 2);
-    plot(df_h, h_log_error);
-    title('acoustic channel frequency response');
+    plot(df_h, real(20*log10(H)));
+    title('estimated channel frequency response');
     xlabel('frequency(Hz)');
     ylabel('magnitude (dB)');
+
+
+
+
+
+
+
+   
+   
 
   
