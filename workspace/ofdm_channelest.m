@@ -2,19 +2,19 @@ addpath(genpath('helper_functions'), genpath('mod_func'), genpath('data'));
 clearvars; hold on; close all;
 % Exercise session 4: DMT-OFDM transmission scheme
 
-K = 4;
+K = 6;
 N = 512;
 fs = 16000;
 
 SNR = 60;
-L = 180; %channel length
+L = 160; %channel length
 cp_size = L+16;
 
 %% 5.1
 seq = randi([0 1], (N/2-1)*K, 1); % random bits
 trainblock = qam_mod(seq, K); 
 trainblocks = repmat(trainblock,100,1);
-Tx = ofdm_mod(trainblocks, N, cp_size);
+Tx = ofdm_mod_tb(trainblocks, N, cp_size);
 
 
 load('h_ir2','h');
@@ -22,7 +22,7 @@ h = [zeros(20,1); h; zeros(N -20 -size(h, 1), 1)];
 
 Rx = fftfilt(h, Tx);
 
-[seq_qam , H] = ofdm_demod(Rx, N, cp_size, trainblock);
+[seq_qam , H] = ofdm_demod_tb(Rx, N, cp_size, trainblock);
 
 receive_deqam = qam_demod(seq_qam, K); 
 trainblocks_deqam = qam_demod(trainblocks, K); 
@@ -78,11 +78,12 @@ subplot(2, 1, 2);
 %     ylabel('magnitude (dB)');
     
 %% 5.2 
-
+% BER is vrij hoog, we gaan voort hopelijk komt dit doorat we niet
+% optimaliseren
 seq = randi([0 1], (N/2-1)*K, 1); % random bits
 trainblock = qam_mod(seq, K); 
 trainblocks = repmat(trainblock,100,1);
-Tx = ofdm_mod(trainblocks, N, cp_size);
+Tx = ofdm_mod_tb(trainblocks, N, cp_size);
 
 %pulse  =  wgn(fs*0.1, 1, 0); % pulse = 0.1 sec of noise
 [pulse, ~] = sinusoid(1000, 1, 1, fs);
@@ -94,14 +95,14 @@ rec = simout.signals.values;
 [Rx_2] = alignIO(rec,pulse,L);
 Rx_2 = Rx_2(1:length(Tx));
 
-[seq_qam , H] = ofdm_demod(Rx_2, N, cp_size, trainblock);
+[seq_qam , H] = ofdm_demod_tb(Rx_2, N, cp_size, trainblock);
 
 receive_deqam = qam_demod(seq_qam, K); 
 trainblocks_deqam = qam_demod(trainblocks, K); 
 
 
 
-[bert, bert_seq] = ber(seq,trainblocks_deqam);
+[bert, bert_seq] = ber(receive_deqam,trainblocks_deqam);
 
 h_est = (real(ifft(H)'))';
 h_est = [h_est; zeros(N -size(h_est, 1), 1)];
@@ -116,6 +117,9 @@ subplot(2, 1, 2);
     title('estimated channel frequency response');
     xlabel('frequency(Hz)');
     ylabel('magnitude (dB)');
+    
+    
+ 
 
 
 

@@ -1,21 +1,44 @@
-function [seq_ofdm] = ofdm_mod(seq_qam, N, cp_size)
+function [seq_ofdm] = ofdm_mod(seq_qam, N, cp_size, freq_bins, trainblock, Lt, Ld)
+%% updated for ex 6 
 
-P = ceil(size(seq_qam, 1) / (N/2 -1)); % P berekenen : totale lengte van seq_qam
-% gedeeld door het aamtal elementen dat we in elke frame kunnen steken. in
-% elke frame passen N getallen in totaal waarvan 2 nul zijn (dc) en de
-% helft van de rest de comlex toegevoegde. dus N/2-1 elementen van de seq
-% in 1 frame.
+% Bepaal de P 
+M = sum(freq_bins); % M = aantal ellementen die we in 1 frame kunnen steken
+P = ceil(size(seq_qam, 1) / M); % P berekenen : totale lengte van seq_qam
 
-% P -> moet een geheel getal zijn dus afronden naar boven en dan de seq padden met nullen
+%pad data als nodig
+seq_qam_pad = padarray(seq_qam,P*M-size(seq_qam, 1),0,'post');
 
-%Nullen toevoegen zodat we kunnen reshapen
-seq_qam_pad = padarray(seq_qam,P*(N/2-1)-size(seq_qam, 1),0,'post');
+% data groeperen in P x M matrix Group data in in P packets (X[1], ..., X[N/2-1] in each)
+seq_qam_reshaped = reshape(seq_qam_pad, M, P);
 
-% data groeperen in P x (N/2-1) matrix Group data in in P packets (X[1], ..., X[N/2-1] in each)
-seq_qam_reshaped = reshape(seq_qam_pad, N/2-1, P);
+% gewone frames maken
+frames_data = zeros(N,P);
+i = 1;
+for j = 1: length(freq_bins)
+    if  freq_bins(j)
+        frames_data(j+1,:)= seq_qam_reshaped(i,:); 
+        frames_data(N+2-j-1, :) = conj(seq_qam_reshaped(i, :));
+        i = i+1;
+    end
+end
 
-% De frames maken, 0 vam boven, de seq, 0 rij, toegevoegd compex  
-frames = [zeros(1, P); seq_qam_reshaped; zeros(1,P); flipud(conj(seq_qam_reshaped))];
+%% trainingblokken maken
+
+n_tb = ceil(P/Ld);
+frames = zeros(N, P+n_packets*Lt);
+
+trainblocks = repmat(trainblock, 1, Lt);
+trainblock_frames = [zeros(1, Lt); trainblocks; zeros(1,Lt); flipud(conj(trainblocks))];
+
+% begin met tb en dan data => voor ld datablock, steek er een tb in
+for i = 1:n_tb -1
+    frames(:,1+(Lt+Ld)*(i-1):(Lt+Ld)*(i-1)+Lt) = trainblock_frames;
+    frames(:,1+(Lt+Ld)*(i-1)+Lt:(Lt+Ld)*(i)) = frames_data(:, 1+(i-1)*Ld: i*Ld);
+end
+
+% Laatste appart doen (niet altijd de Ld lengte)
+frames(:,1+(Lt+Ld)*(i-1):(Lt+Ld)*(i-1)+Lt) = trainblock_frames;
+frames(:,1+(Lt+Ld)*(i-1)+Lt:end) = frames_data(:, 1+(i-1)*Ld: end);
 
 % 
 seq_ifft = ifft(frames); % ifft van nemen

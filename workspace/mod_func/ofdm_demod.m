@@ -1,30 +1,53 @@
-function [seq_qam, H ] = ofdm_demod(seq_ifft, N, cp_size, tb)
+function [seq_qam, H ] = ofdm_demod(seq_ifft, N, cp_size,freq_bins, trainblock, Lt, Ld)
 
+% Bepaal de P 
+M = sum(freq_bins); % M = aantal ellementen die we in 1 frame kunnen steken
+P = ceil(length(seq_ifft) / (N+cp_size)); % P berekenen : totale lengte van seq_qam
 
-% bereken aantal pakketjes (P frames van N+cp lenghte)
-P = ceil(size(seq_ifft, 1)/(N + cp_size));
+% bepaal lengte van data 
+data_length = P -(floor(P/(Lt+Ld))+1)*(Lt); 
 
-seq_ifft = padarray(seq_ifft,P*(N + cp_size)-size(seq_ifft, 1),0,'post');
-
-% de vector terug mooi omvormen naar een matrix met elke kollom een frame
+%reshape P en remove cp
 seq_reshaped = reshape(seq_ifft, N + cp_size, P);
 seq_reshaped = seq_reshaped(cp_size+1 : end , :);% Prefix eraf halen
 
-seq_fft = fft(seq_reshaped); % FFT ervan nemen
+% Nul matrix toevoegen om for loop makkelijker 
 
-tb = repmat(tb,1,P);
+% fft ervan
+seq_fft = fft(seq_reshaped);
+seq_fft = seq_fft((2:N/2), :); % nuttige data
 
-% 'Channel equalization'
+% tb maken 
+trainblocks = repmat(trainblock, 1, Lt);
 
-trainblock_rx = seq_fft(2 : N/2,:); % enkel de sectie eruithalen met nuttige data -> complex toegevoegdes weglaten
+H = [];
 
-H = zeros(N/2-1,1);
+H_temp = zeros(N/2-1,1);
 
-for j= 1: (N/2-1)
-    H(j)= mrdivide(trainblock_rx(j,:),tb(j,:));
-end 
+seq_qam = []; % Nakijken
 
-seq_qam = trainblock_rx./H;
+for i=1:(Ld+Lt):P
+    % gegevens eruit
+    train_rx = seq_fft(:,(i : i + Lt-1));
+    data = seq_fft(:, (i +(Lt): i+delta_tb-1));
+    % Channel estimation
+    for j= 1: (N/2-1)
+        H_temp(j)= mrdivide(train_rx(j,:),trainblocks(j,:));
+    end
+    % Channel equal
+    data_temp = (H_temp.').\data_block;
+    seq_qam = [seq_qam, data_temp];
+    H = [H,H_temp.'];
+end
+
+% data eruit halen
+del_row = find(~freq_bins); %neem de index van alle rijen zonder info 
+
+seq_qam(del_row,:) = []; 
+
+% Nulmatrix eraf halen 
+ todo
+
 
 seq_qam = seq_qam(:); % terug mooi een vector van maken 
 
