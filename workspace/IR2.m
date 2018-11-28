@@ -1,5 +1,5 @@
 addpath(genpath('helper_functions'));
-%clearvars; close all;
+clearvars; close all;
 
 %% 2.2.1 Relation between u[k], y[k] and h
 % y[k] = h(k)*u(k) (* is convolutie)
@@ -8,7 +8,7 @@ addpath(genpath('helper_functions'));
 %% 2.2.2 Estimate IR h
 %%%%%parameters
 fs=16000;
-h_order = 160;                                      %(bepaald bij IR1.m)  
+h_order = 200;                                      %(bepaald bij IR1.m)  
 sig_time = 2;
 
 %%%%%Generate input signal (witte ruis), play and record
@@ -18,7 +18,7 @@ sig =  wgn(fs*sig_time, 1, 0);
 sim('recplay'); 
 rec = simout.signals.values;
 
-start = find(rec > 0.3*max(rec), 1, 'first')-20;    %geeft de eerst index die hieraan voldoet
+start = find(rec > 0.5*max(rec), 1, 'first')-20;    %geeft de eerst index die hieraan voldoet
                                                     %start is de index waar het signaal (ruis) groter is dan de ruis die er
                                                     %altijd is --> zeker dat het signaal daar start
 

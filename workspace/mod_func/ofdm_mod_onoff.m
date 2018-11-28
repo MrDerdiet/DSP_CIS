@@ -25,6 +25,7 @@ for j = 1: length(freq_bins)
         frames(N+2-j-1, :) = conj(seq_qam_reshaped(i, :));
         i = i+1;
     end
+    
 end
 
 seq_ifft = ifft(frames); % ifft van nemen

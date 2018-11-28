@@ -2,7 +2,7 @@ addpath(genpath('helper_functions'), genpath('mod_func'), genpath('data'));
 clearvars; hold on; close all;
 % Exercise session 4: DMT-OFDM transmission scheme
 
-K = 6;
+K = 4;
 N = 512;
 fs = 16000;
 

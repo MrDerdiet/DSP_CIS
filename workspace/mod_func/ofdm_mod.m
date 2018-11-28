@@ -1,4 +1,4 @@
-function [seq_ofdm] = ofdm_mod(seq_qam, N, cp_size, freq_bins, trainblock, Lt, Ld)
+function [seq_ofdm, dim_P] = ofdm_mod(seq_qam, N, cp_size, freq_bins, trainblock, Lt, Ld)
 %% updated for ex 6 
 
 % Bepaal de P 
@@ -23,9 +23,9 @@ for j = 1: length(freq_bins)
 end
 
 %% trainingblokken maken
-
 n_tb = ceil(P/Ld);
-frames = zeros(N, P+n_packets*Lt);
+dim_P = P+(n_tb-1)*Lt;
+frames = zeros(N, dim_P;
 
 trainblocks = repmat(trainblock, 1, Lt);
 trainblock_frames = [zeros(1, Lt); trainblocks; zeros(1,Lt); flipud(conj(trainblocks))];
