@@ -44,7 +44,7 @@ frames(:,1+(Lt+Ld)*(i-1):(Lt+Ld)*(i-1)+Lt) = trainblock_frames;
 frames(:,1+(Lt+Ld)*(i-1)+Lt:end) = frames_data(:, 1+(i-1)*Ld: end);
 
 % 
-seq_ifft = ifft(frames); % ifft van nemen
+seq_ifft = ifft(frames,N); % ifft van nemen
 seq_ifft = [seq_ifft(end-cp_size+1 : end, :); seq_ifft ]; % add cyclic prefix, so total packet size = P+size(cyclic_prefix)
 seq_ofdm = seq_ifft(:); % Serialize data stream
 

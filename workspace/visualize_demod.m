@@ -8,8 +8,8 @@ fs=16000;
 SNR = 60;
 L = 160; %channel length
 cp_size = L+16;
-Lt = 1;
-Ld = 4;
+Lt = 2;
+Ld = 8;
 BW = 80;
 threshold = BW/100;
 

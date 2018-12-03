@@ -27,17 +27,16 @@ H_est = (c_est(1:end-1,:) + c_est(2:end,:))/2; % interpolate
 seq_fft(pilotes,:) = [];
 freq_bins(pilotes,:) = [];
 % channel eq
-seq_qam = seq_fft./H_est;
+seq_fft_eq = seq_fft./H_est;
 
 % freq bins eruit
 del_row = find(~freq_bins); %neem de index van alle rijen zonder info 
-seq_qam(del_row,:) = [];
+seq_fft(del_row,:) = [];
 
-seq_qam = seq_qam(:); % terug mooi een vector van maken 
+seq_qam = seq_fft(:); % terug mooi een vector van maken 
 
 % H en channelest mergen
 H = zeros(N/2-1,P);
-H(pilotes,:) = c_est; 
-H(pilotes(2:end)-1,:) = H_est; 
+
 end
 

@@ -17,12 +17,15 @@ seq_reshaped = seq_reshaped(cp_size+1 : end , :);% Prefix eraf halen
 
 
 % fft ervan
-seq_fft = fft(seq_reshaped);
+seq_fft = fft(seq_reshaped,N);
 seq_fft = seq_fft((2:N/2), :); % nuttige data
 
 % Nul matrix toevoegen om for loop makkelijker
-padded = Lt+Ld-rem(P,Lt+Ld); % #toegevoegde kolommen
-seq_fft = [seq_fft, zeros(N/2-1,padded)];
+if rem(P,Lt+Ld)>0
+    padded = Lt+Ld-rem(P,Lt+Ld); % #toegevoegde kolommen
+    seq_fft = [seq_fft, zeros(N/2-1,padded)];
+end
+
 
 % tb maken 
 trainblocks = repmat(trainblock, 1, Lt);
@@ -33,7 +36,7 @@ H_temp = zeros(N/2-1,1);
 
 seq_qam = []; 
 
-for i=1:(Ld+Lt):P+1
+for i=1:(Ld+Lt):P
     % gegevens eruit
     train_rx = seq_fft(:,(i : i + Lt-1));
     data = seq_fft(:, (i +(Lt): i+(Ld+Lt)-1));
@@ -52,8 +55,6 @@ del_row = find(~freq_bins); %neem de index van alle rijen zonder info
 
 seq_qam(del_row,:) = []; 
 
-% Nulmatrix eraf halen + trasponeren
-seq_qam = seq_qam(:,1:end-padded);
 
 seq_qam = seq_qam(:); % terug mooi een vector van maken 
 
