@@ -41,7 +41,7 @@ for i=1:(Ld+Lt):P+1
     for j= 1: (N/2-1)
         H_temp(j)= mrdivide(train_rx(j,:),trainblocks(j,:));
     end
-    % Channel equal    
+    % Channel equal
     data_temp = data./H_temp;
     seq_qam = [seq_qam, data_temp];
     H = [H ,H_temp];
@@ -53,8 +53,9 @@ del_row = find(~freq_bins); %neem de index van alle rijen zonder info
 seq_qam(del_row,:) = []; 
 
 % Nulmatrix eraf halen + trasponeren
-seq_qam = seq_qam(:,1:end-padded);
+seq_qam = seq_qam(:,1:end-padded+1);
 
+% seq_qam = seq_qam.';
 seq_qam = seq_qam(:); % terug mooi een vector van maken 
 
 end

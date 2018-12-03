@@ -1,4 +1,4 @@
-function [seq_ofdm, dim_P] = ofdm_mod(seq_qam, N, cp_size, freq_bins, trainblock, Lt, Ld)
+function [seq_ofdm, dim_P] = ofdm_mod_pilote(seq_qam, N, cp_size, freq_bins, pilote, Lt, Ld)
 %% updated for ex 6 
 
 % Bepaal de P 
@@ -25,7 +25,7 @@ end
 
 %% trainingblokken maken
 n_tb = ceil(P/Ld);
-dim_P = P+n_tb*Lt;
+dim_P = P+ n_tb*Lt;
 frames = zeros(N, dim_P);
 
 trainblocks = repmat(trainblock, 1, Lt);
@@ -36,12 +36,10 @@ for i = 1:n_tb -1
     frames(:,1+(Lt+Ld)*(i-1):(Lt+Ld)*(i-1)+Lt) = trainblock_frames;
     frames(:,1+(Lt+Ld)*(i-1)+Lt:(Lt+Ld)*(i)) = frames_data(:, 1+(i-1)*Ld: i*Ld);
 end
-
-i = i+1 ;
-
+i = i+1;
 % Laatste appart doen (niet altijd de Ld lengte)
 frames(:,1+(Lt+Ld)*(i-1):(Lt+Ld)*(i-1)+Lt) = trainblock_frames;
-frames(:,1+(Lt+Ld)*(i-1)+Lt:end) = frames_data(:, 1+(i-1)*Ld: end);
+frames(:,1+(Lt+Ld)*(i-1)+Lt:end) = frames_data(:,1+(i-1)*Ld: end);
 
 % 
 seq_ifft = ifft(frames); % ifft van nemen
