@@ -4,14 +4,14 @@ clearvars; hold on; close all;
 %% Params
 
 K = 4;
-N = 2048;
+N = 1024;
 fs = 16000;
 SNR = 60;
 L = 160; %channel length
 cp_size = L+16;
 Lt = 1;
 Ld = 4;
-BW = 40;
+BW = 80;
 threshold = BW/100;
 
 %% Image==Data
@@ -26,15 +26,13 @@ pilote_qam  = qam_mod(pilote_bit, K);
 %% freq bins bepalen
 seq = randi([0 1], (N/2-1)*K, 1); % random bits
 trainblock = qam_mod(seq, K); 
-trainblocks = repmat(trainblock,20,1);
+trainblocks = repmat(trainblock,10,1);
 Tx = ofdm_mod_tb(trainblocks, N, cp_size);
 
 [pulse, ~] = sinusoid(1000, 1, 1, fs);
 [simin,nbsecs,fs,pulse ] = initparams(Tx,fs,L, pulse);
-
 sim('recplay'); 
 rec = simout.signals.values;
-
 [Rx_2] = alignIO(rec,pulse,L);
 Rx_2 = Rx_2(1:length(Tx));
 
@@ -42,7 +40,7 @@ Rx_2 = Rx_2(1:length(Tx));
 %aanpassen naar enkel de even freq
 pilotes = 1:2:N/2-1;
 H(pilotes) = 0;
-freq_bins = ofdm_freq_bins(H, N, threshold);
+freq_bins = ofdm_freq_bins(H, N, threshold/2);
 
 
 %% Modulate (QAM amd OFDM)
@@ -111,7 +109,7 @@ max_H = max(H_db(:));
 min_H = min(H_db(:));
 figure('Name','visualisation of the demodulation')
 subplot(2,2,2);colormap(colorMap); image(imageData); axis image; title('The transmitted image'); 
-for i = 1:size(h,2) 
+for i = 1:size(h,2)-1 
     subplot(2,2,1)
     plot(h(:,i))
     title('Channel in time domain')

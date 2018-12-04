@@ -11,6 +11,7 @@ seq_qam_pad = padarray(seq_qam,P*M-size(seq_qam, 1),0,'post');
 % data groeperen in P x M matrix Group data in in P packets (X[1], ..., X[N/2-1] in each)
 seq_qam_reshaped = reshape(seq_qam_pad, M, P);
 
+
 % pilotes maken
 pilote = repmat(pilote,1,P);
 % gewone frames maken

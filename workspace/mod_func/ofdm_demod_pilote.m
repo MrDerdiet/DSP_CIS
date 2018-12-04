@@ -21,11 +21,12 @@ tones = seq_fft(pilotes,:);
 
 % channelest
 c_est = tones./pilote;
-H_est = (c_est(1:end-1,:) + c_est(2:end,:))/2; % interpolate
+H_est = (c_est(1:end-1,:) + c_est(2:end,:))/2; % interpolate linear
 
 % data eruit
 seq_fft(pilotes,:) = [];
 freq_bins(pilotes,:) = [];
+
 % channel eq
 seq_qam = seq_fft./H_est;
 
