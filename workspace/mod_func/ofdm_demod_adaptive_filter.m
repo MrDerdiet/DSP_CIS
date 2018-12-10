@@ -1,5 +1,6 @@
-function [seq_qam, W_tot ] = ofdm_demod_adaptive_filter(seq_ifft, N, cp_size,freq_bins, trainblock, Lt, mu, K)
-alpha = 0.2;
+function [seq_qam, W_tot ] = ofdm_demod_adaptive_filter(seq_ifft, N, cp_size,freq_bins, trainblock, Lt, mu, K,alpha)
+
+qam_symbols = qammod((0:2^K-1)',2^K,'bin','UnitAveragePower', true); % generate the different possible qam symboles
 % Bepaal de P 
 M = sum(freq_bins); % M = aantal ellementen die we in 1 frame kunnen steken
 P = ceil(length(seq_ifft) / (N+cp_size)); % P berekenen : totale lengte van seq_qam
@@ -35,8 +36,8 @@ W(:,1) = 1./conj(H_init);
 for i=1:P-Lt
     for k =  1:M 
         Xtilde_temp = conj(W(k,i))*data_rx_frames(k, i);
-        Xtildedeqam = qamdemod(Xtilde_temp, 2^K, 'bin', 'UnitAveragePower', true); % Decision Device 
-        Xcirconflex_temp = qammod(Xtildedeqam, 2^K, 'bin', 'UnitAveragePower', true);
+        [~, index] = min(abs(qam_symbols-Xtilde_temp));
+        Xcirconflex_temp = qam_symbols(index);
         seq_qam(k,i) = Xcirconflex_temp;
         W(k,i+1) =  W(k,i) + mu/(alpha+conj(data_rx_frames(k, i))*data_rx_frames(k, i))*data_rx_frames(k, i)*conj(Xcirconflex_temp-Xtilde_temp);
     end

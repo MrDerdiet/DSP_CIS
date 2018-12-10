@@ -2,6 +2,7 @@ addpath(genpath('helper_functions'), genpath('mod_func'), genpath('data'));
 clearvars; hold on; close all;
 
 %% Params
+alpha =0.2;
 mu = 1;
 K = 4;
 N = 512;
@@ -9,10 +10,13 @@ fs = 16000;
 SNR = 60;
 L = 160; %channel length
 cp_size = L+16;
-Lt = 1;
+Lt = 5;
 Ld = 4;
-BW = 50;
+BW = 75;
 threshold = BW/100;
+
+alpha_test = [0.01; 0.1; 1; 10];
+mu_test = [0.01; 0.1; 1; 5];
 
 %% Image==Data
 [bitStream, imageData, colorMap, imageSize, bitsPerPixel] = imagetobitstream('image.bmp');
@@ -68,7 +72,7 @@ rec = simout.signals.values;
 Rx = Rx(1:length(Tx)+L+10);
 
 %% Demod
-[rxQamStream, H ] = ofdm_demod_adaptive_filter(Rx, N, cp_size,freq_bins, trainblock_qam, Lt, mu,K);
+[rxQamStream, H ] = ofdm_demod_adaptive_filter(Rx, N, cp_size,freq_bins, trainblock_qam, Lt, mu,K,alpha);
 
 
 %% QAM demodulation
