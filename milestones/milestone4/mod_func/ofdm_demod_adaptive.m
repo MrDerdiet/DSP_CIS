@@ -56,7 +56,6 @@ for i= 1: P-Lt
     for j = 1: M
         Xtilde_temp = conj(W(j,i))*data_rx_frames(j, i);
         [~, index] = min(abs(qam_symbols-Xtilde_temp));
-        % nuttige data er uit halen
         Xcirconflex_temp = qam_symbols(index);
         seq_qam(j,i) = Xcirconflex_temp;  
         W(j,i+1) =  W(j,i) + mu/(alpha+conj(data_rx_frames(j, i))*data_rx_frames(j, i))*data_rx_frames(j, i)*conj(Xcirconflex_temp-Xtilde_temp);

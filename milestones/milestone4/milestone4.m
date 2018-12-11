@@ -2,123 +2,123 @@
 clearvars; hold on; close all;
 addpath(genpath('help_functions'), genpath('data'), genpath('mod_func'));
 
-% %% DEMO_1
-% % [7.1.1] Construct a QAM symbol sequence of length 1000 = Xk at a single tone k
-% % Choose a complex value for the Hk 
-% % Generate the received symbol sequence Yk based on (1).
-% 
-% n = 1000;
-% K = 4;
-% qam_symbols = qammod((0:2^K-1)',2^K,'bin','UnitAveragePower', true); % generate the different possible qam symboles
-% seq = randi([0 1], 1, K*n);
-% seq_qam = qam_mod(seq, K);
-% 
-% H = (0.666 + 0.666j);
-% 
-% % [7.1.2] Implement the adaptive filter as shown in Fig1 using LMS or NLMS 
-% % omit the  noise.   
-% % Note  that  the  adaptive  filter in our case has only one (complex) tap.  
-% % Choose an initial value for Wk = (1/Hk*)+ delta
-% % delta corresponds to a small deviation such that the decision 
-% % device still makes correct decisions 
-% % (the conjugation of Hk is explained later).
-% delta = (1+1j);
-% mu = [0.05; 0.5; 5]; %5
-% alpha = 10;
-% 
-% W = zeros(n+1, length(mu));
-% W(1,:) = 1/conj(H)+delta;
-% W_error = zeros(n, length(mu));
-% Xtilde = zeros(n, length(mu));
-% Xcirconflex = zeros(n, length(mu));
-% legend_names = cell.empty(length(mu), 0);
-% 
-% Y = H*seq_qam;
-% for i=1:length(mu)
-%     
-%     for k=1:n
-%         Xtilde(k,i) = conj(W(k,i))*Y(k);
-%         [~, index] = min(abs(qam_symbols-Xtilde(k,i)));
-%         Xcirconflex(k,i) = qam_symbols(index);
-%         W(k+1,i) =  W(k,i) + mu(i)/(alpha+conj(Y(k))*Y(k))*Y(k)*conj(Xcirconflex(k,i)-Xtilde(k,i));
-%         W_error(k,i) = W(k,i) -1/conj(H);
-%     end
-%     legend_names{i} = strcat('Mu = ',num2str(mu(i)));
-% end
-% error = Xcirconflex - Xtilde;
-% 
-% % [7.1.4] Generate a figure that plots the error signal (y-axis)
-% % i.e.  the difference between the adaptive filter coefficient
-% % Wk* and the inverse channel coefficient 1/Hk,
-% % over the iterations (x-axis), for different stepsizes.
-% figure('Name', 'W_error signal (constant Hk)');
-% subplot(3,1,1);
-% plot(real(W_error)); title('Real')
-% subplot(3,1,2)
-% plot(imag(W_error)); title('imag');
-% subplot(3,1,3)
-% plot(abs(W_error)); title('abs');
-% legend(legend_names);
-% 
-% figure('Name', 'QAM error signal (constant Hk)');
-% subplot(3,1,1);
-% plot(real(error)); title('Real')
-% subplot(3,1,2)
-% plot(imag(error)); title('imag');
-% subplot(3,1,3)
-% plot(abs(error)); title('abs');
-% legend(legend_names);
-% 
-% % [7.1.5]
-% % What happens when the channel changes (slow and fast)?  
-% % What does this mean for the OFDM transmission?
-% % Only if the adaptive filter converges correctly, you can proceed to
-% % the next exercise!
-% H = zeros(n+1, 1);
-% H(1) = (0.666 + 0.666j);
-% for i=1:length(mu)
-%     for k=1:n
-%         Y(k) = H(k)*seq_qam(k);
-%         Xtilde(k,i) = conj(W(k,i))*Y(k);
-%         [~, index] = min(abs(qam_symbols-Xtilde(k,i)));
-%         Xcirconflex(k,i) = qam_symbols(index);
-%         W(k+1,i) =  W(k,i) + mu(i)/(alpha+conj(Y(k))*Y(k))*Y(k)*conj(Xcirconflex(k,i)-Xtilde(k,i));
-%         W_error(k,i) = W(k,i) -1/conj(H(k));
-% %         H(k+1) = H(k) + (randi([-1000; 1000]) + randi([-1000; 1000])*j)/100000;
-%         H(k+1) = H(k) + (randn(1) + randn(1)*1j)/500; 
-%     end
-%     legend_names{i} = strcat('Mu = ',num2str(mu(i)));
-% end
-% error = Xcirconflex - Xtilde;
-% 
-% figure('Name', 'W_error signal (variable Hk)');
-% subplot(3,1,1);
-% plot(real(W_error)); title('Real')
-% subplot(3,1,2)
-% plot(imag(W_error)); title('imag');
-% subplot(3,1,3)
-% plot(abs(W_error)); title('abs');
-% legend(legend_names);
-% 
-% figure('Name', 'QAM Error (variable Hk)');
-% subplot(3,1,1);
-% plot(real(error)); title('Real')
-% subplot(3,1,2)
-% plot(imag(error)); title('imag');
-% subplot(3,1,3)
-% plot(abs(error)); title('abs');
-% legend(legend_names);
-% 
-% figure('Name', 'Hk');
-% subplot(3,1,1);
-% plot(real(H)); title('Real')
-% subplot(3,1,2)
-% plot(imag(H)); title('imag');
-% subplot(3,1,3)
-% plot(abs(H)); title('abs');
-% 
-% %% DEMO_2
-% 
+%% DEMO_1
+% [7.1.1] Construct a QAM symbol sequence of length 1000 = Xk at a single tone k
+% Choose a complex value for the Hk 
+% Generate the received symbol sequence Yk based on (1).
+
+n = 1000;
+K = 4;
+qam_symbols = qammod((0:2^K-1)',2^K,'bin','UnitAveragePower', true); % generate the different possible qam symboles
+seq = randi([0 1], 1, K*n);
+seq_qam = qam_mod(seq, K);
+
+H = (0.666 + 0.666j);
+
+% [7.1.2] Implement the adaptive filter as shown in Fig1 using LMS or NLMS 
+% omit the  noise.   
+% Note  that  the  adaptive  filter in our case has only one (complex) tap.  
+% Choose an initial value for Wk = (1/Hk*)+ delta
+% delta corresponds to a small deviation such that the decision 
+% device still makes correct decisions 
+% (the conjugation of Hk is explained later).
+delta = (1+1j);
+mu = [0.05; 0.5; 5]; %5
+alpha = 10;
+
+W = zeros(n+1, length(mu));
+W(1,:) = 1/conj(H)+delta;
+W_error = zeros(n, length(mu));
+Xtilde = zeros(n, length(mu));
+Xcirconflex = zeros(n, length(mu));
+legend_names = cell.empty(length(mu), 0);
+
+Y = H*seq_qam;
+for i=1:length(mu)
+    
+    for k=1:n
+        Xtilde(k,i) = conj(W(k,i))*Y(k);
+        [~, index] = min(abs(qam_symbols-Xtilde(k,i)));
+        Xcirconflex(k,i) = qam_symbols(index);
+        W(k+1,i) =  W(k,i) + mu(i)/(alpha+conj(Y(k))*Y(k))*Y(k)*conj(Xcirconflex(k,i)-Xtilde(k,i));
+        W_error(k,i) = W(k,i) -1/conj(H);
+    end
+    legend_names{i} = strcat('Mu = ',num2str(mu(i)));
+end
+error = Xcirconflex - Xtilde;
+
+% [7.1.4] Generate a figure that plots the error signal (y-axis)
+% i.e.  the difference between the adaptive filter coefficient
+% Wk* and the inverse channel coefficient 1/Hk,
+% over the iterations (x-axis), for different stepsizes.
+figure('Name', 'W_error signal (constant Hk)');
+subplot(3,1,1);
+plot(real(W_error)); title('Real')
+subplot(3,1,2)
+plot(imag(W_error)); title('imag');
+subplot(3,1,3)
+plot(abs(W_error)); title('abs');
+legend(legend_names);
+
+figure('Name', 'QAM error signal (constant Hk)');
+subplot(3,1,1);
+plot(real(error)); title('Real')
+subplot(3,1,2)
+plot(imag(error)); title('imag');
+subplot(3,1,3)
+plot(abs(error)); title('abs');
+legend(legend_names);
+
+% [7.1.5]
+% What happens when the channel changes (slow and fast)?  
+% What does this mean for the OFDM transmission?
+% Only if the adaptive filter converges correctly, you can proceed to
+% the next exercise!
+H = zeros(n+1, 1);
+H(1) = (0.666 + 0.666j);
+for i=1:length(mu)
+    for k=1:n
+        Y(k) = H(k)*seq_qam(k);
+        Xtilde(k,i) = conj(W(k,i))*Y(k);
+        [~, index] = min(abs(qam_symbols-Xtilde(k,i)));
+        Xcirconflex(k,i) = qam_symbols(index);
+        W(k+1,i) =  W(k,i) + mu(i)/(alpha+conj(Y(k))*Y(k))*Y(k)*conj(Xcirconflex(k,i)-Xtilde(k,i));
+        W_error(k,i) = W(k,i) -1/conj(H(k));
+%         H(k+1) = H(k) + (randi([-1000; 1000]) + randi([-1000; 1000])*j)/100000;
+        H(k+1) = H(k) + (randn(1) + randn(1)*1j)/500; 
+    end
+    legend_names{i} = strcat('Mu = ',num2str(mu(i)));
+end
+error = Xcirconflex - Xtilde;
+
+figure('Name', 'W_error signal (variable Hk)');
+subplot(3,1,1);
+plot(real(W_error)); title('Real')
+subplot(3,1,2)
+plot(imag(W_error)); title('imag');
+subplot(3,1,3)
+plot(abs(W_error)); title('abs');
+legend(legend_names);
+
+figure('Name', 'QAM Error (variable Hk)');
+subplot(3,1,1);
+plot(real(error)); title('Real')
+subplot(3,1,2)
+plot(imag(error)); title('imag');
+subplot(3,1,3)
+plot(abs(error)); title('abs');
+legend(legend_names);
+
+figure('Name', 'Hk');
+subplot(3,1,1);
+plot(real(H)); title('Real')
+subplot(3,1,2)
+plot(imag(H)); title('imag');
+subplot(3,1,3)
+plot(abs(H)); title('abs');
+
+%% DEMO_2
+
 
 clearvars; 
 
@@ -128,7 +128,7 @@ clearvars;
 for bit_loading = 0: 1
     %% PAUSE
     fprintf('Press any key to continue (in CW)');
-    %pause;
+    pause;
 
     close all;
     clearvars -except bit_loading bitStream_in imageData colorMap imageSize bitsPerPixel; 
@@ -138,17 +138,17 @@ for bit_loading = 0: 1
     tic;
 
     fs = 16000;
-    N = 512; 
+    N = 1024; 
     K = 4; 
     Lt = 3;
     BW = 50;
     threshold = BW/100;
     alpha = 1;
     mu = 1;
-    cp_size = 176;
-    L = 160; %channel length
-    alpha_test = [0.01; 0.1; 1; 10];
-    mu_test = [0.01; 0.1; 1; 5];
+    cp_size = 250;
+    L = 200; %channel length
+    alpha_test = [0.05;0.075; 0.1; 0.125; 0.15];
+    mu_test = [0.5; 0.75; 1; 1.25 ; 1.5];
     
     [pulse, ~] = sinusoid(1000, 1, 1, fs);
     %% channel est for freq_bins
@@ -253,6 +253,8 @@ H_out_plot = [zeros(1, size(H_out, 2)); H_out];
 H = [zeros(1, size(H_out, 2)); H_out; zeros(1, size(H_out, 2)); flipud(conj(H_out))];
 h = ifft(W);
 
+max_h = max(h(:));
+
 
 %% Visualize
 time = 0.00001;
@@ -264,8 +266,7 @@ for i = 1:size(h, 2)
     subplot(2,2,1)
     plot(h(:,i))
     title('Channel in time domain')
-%     axis([0 h_order -1 1])
-    axis([0 L -0.5 0.5])
+    axis([0 160 -max_h max_h])
     
     subplot(2,2,3)
     plot( (1:N/2) *fs/(N/2-1)/2, 20*log10(abs(H_out_plot(:,i))));
@@ -274,13 +275,13 @@ for i = 1:size(h, 2)
     ylabel('Magnitude')
     xlabel('Frequency')
     
-    if i*(sum(freq_bins)*K) < sum(bitStream_out)
+    if i*(sum(freq_bins)*K) < length(bitStream_out)
         imageRx = bitstreamtoimage(bitStream_out(1:i*sum(freq_bins)*K), imageSize, bitsPerPixel);
     else
         imageRx = bitstreamtoimage(bitStream_out, imageSize, bitsPerPixel);
     end
     subplot(2,2,4); colormap(colorMap); image(imageRx); axis image; title('Received image'); drawnow;
-%     pause(time)
+    pause(time)
 end    
 
 %% [7.2.4] Slowly increase and decrease the volume during the transmission. 
